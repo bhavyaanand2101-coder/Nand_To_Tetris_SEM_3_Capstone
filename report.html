@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Nand to Tetris Capstone Project Report - Bhavya Anand (2501730046)</title>
+<style>
+    @page {
+        size: A4 portrait;
+        margin: 10mm 12mm 10mm 12mm;
+    }
+    * {
+        box-sizing: border-box;
+    }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #1f2328;
+        background: #ffffff;
+        font-size: 11pt;
+        line-height: 1.45;
+        margin: 0;
+        padding: 0;
+    }
+    .page {
+        max-height: 272mm;
+        overflow: hidden;
+        
+        height: 100%;
+        
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .page:not(:last-of-type) {
+        page-break-after: always;
+    }
+    .page:last-of-type {
+        page-break-after: avoid;
+    }
+    .header-banner {
+        border-bottom: 2px solid #0969da;
+        padding-bottom: 8px;
+        margin-bottom: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+    .univ-name {
+        font-size: 12pt;
+        font-weight: 700;
+        color: #0969da;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .dept-name {
+        font-size: 9.5pt;
+        color: #57606a;
+    }
+    .report-title-box {
+        text-align: center;
+        margin: 10px 0 12px 0;
+        padding: 14px;
+        background: #f6f8fa;
+        border: 1px solid #d0d7de;
+        border-radius: 8px;
+    }
+    .project-title {
+        font-size: 20pt;
+        font-weight: 800;
+        color: #1f2328;
+        margin: 0 0 6px 0;
+    }
+    .project-subtitle {
+        font-size: 11pt;
+        font-weight: 600;
+        color: #0969da;
+    }
+    .meta-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0 12px 0;
+    }
+    .meta-table td {
+        padding: 7px 12px;
+        border: 1px solid #d0d7de;
+        font-size: 10pt;
+    }
+    .meta-label {
+        font-weight: 700;
+        background: #f6f8fa;
+        width: 32%;
+        color: #24292f;
+    }
+    .meta-val {
+        color: #0969da;
+        font-weight: 600;
+    }
+    h2 {
+        font-size: 13.5pt;
+        font-weight: 700;
+        color: #0969da;
+        border-bottom: 1.5px solid #d8dee4;
+        padding-bottom: 4px;
+        margin: 12px 0 8px 0;
+    }
+    h3 {
+        font-size: 11pt;
+        font-weight: 700;
+        color: #24292f;
+        margin: 8px 0 4px 0;
+    }
+    p {
+        margin: 0 0 8px 0;
+        text-align: justify;
+    }
+    code {
+        font-family: "SF Mono", Menlo, Consolas, monospace;
+        background: #f6f8fa;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 9pt;
+        color: #cf222e;
+    }
+    pre {
+        font-family: "SF Mono", Menlo, Consolas, monospace;
+        background: #0d1117;
+        color: #e6edf3;
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-size: 8pt;
+        line-height: 1.35;
+        margin: 6px 0;
+        overflow-x: hidden;
+    }
+    .img-container {
+        text-align: center;
+        margin: 8px 0;
+    }
+    .img-container img {
+        max-width: 95%;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .img-caption {
+        font-size: 8pt;
+        color: #57606a;
+        margin-top: 3px;
+        font-style: italic;
+    }
+    .flex-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .flex-col {
+        flex: 1;
+    }
+    .badge-pass {
+        display: inline-block;
+        background: #dafbe1;
+        color: #1a7f37;
+        border: 1px solid #aceebb;
+        padding: 1px 6px;
+        border-radius: 12px;
+        font-size: 8.5pt;
+        font-weight: 700;
+    }
+    .footer {
+        border-top: 1px solid #d0d7de;
+        padding-top: 5px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 8pt;
+        color: #6e7781;
+    }
+</style>
+</head>
+<body>
+
+<!-- PAGE 1: INTRODUCTION -->
+<div class="page">
+    <div>
+        <div class="header-banner">
+            <div>
+                <div class="univ-name">K.R. Mangalam University</div>
+                <div class="dept-name">School of Engineering & Technology — Department of Computer Science & Engineering</div>
+            </div>
+            <div style="font-size: 8.5pt; color: #57606a; text-align: right;">Course Code: ETCNTC301</div>
+        </div>
+
+        <div class="report-title-box">
+            <div class="project-title">Make the Computer Draw a Box</div>
+            <div class="project-subtitle">Nand to Tetris – I Capstone Project Report</div>
+        </div>
+
+        <table class="meta-table">
+            <tr>
+                <td class="meta-label">Student Name</td>
+                <td class="meta-val">Bhavya Anand</td>
+                <td class="meta-label">Academic Program</td>
+                <td>B.Tech CSE (AIML)</td>
+            </tr>
+            <tr>
+                <td class="meta-label">Student Roll Number</td>
+                <td class="meta-val">2501730046</td>
+                <td class="meta-label">Semester / Batch</td>
+                <td>Semester III (2025–2029)</td>
+            </tr>
+            <tr>
+                <td class="meta-label">Personal Number K</td>
+                <td class="meta-val">K = 46 (from roll no. digits 46)</td>
+                <td class="meta-label">Assembler Feature</td>
+                <td>Invalid Instruction Error Handling</td>
+            </tr>
+            <tr>
+                <td class="meta-label">Box Dimensions</td>
+                <td class="meta-val">48 Pixels Wide &times; 20 Rows High</td>
+                <td class="meta-label">Screen Addresses</td>
+                <td>17856 to 18466 (60 Words Modified)</td>
+            </tr>
+        </table>
+
+        <h2>1. Executive Summary & Objective</h2>
+        <p>
+            The objective of the Nand to Tetris Capstone Project is to demonstrate the complete, end-to-end integration of a functional general-purpose computer starting from fundamental logic chips to a running high-level graphical application. The project is structured across three core engineering phases:
+        </p>
+        <ul>
+            <li><strong>Part A — Hardware Architecture (Hack Computer):</strong> Implement the complete hardware platform in HDL by constructing <code>CPU.hdl</code>, <code>Memory.hdl</code>, and <code>Computer.hdl</code>, verified via the official Nand to Tetris Hardware Simulator.</li>
+            <li><strong>Part B — Software Toolchain (Python Assembler):</strong> Develop an independent two-pass assembler in Python (<code>assembler.py</code>) that translates symbolic Hack assembly into 16-bit binary machine code, incorporating line-number error reporting tailored to student parameter $K = 46$.</li>
+            <li><strong>Part C — Machine Application (Box Program):</strong> Write and assemble <code>Box.asm</code> to dynamically poll the keyboard and render a black rectangular box ($48 \times 20$ pixels) at screen row 46 while any key is pressed, clearing it instantly upon release.</li>
+        </ul>
+
+        <h2>2. Key Specifications & Parameter Derivation</h2>
+        <p>
+            In accordance with university capstone guidelines, all design variables are strictly calculated from personal number $K = 46$:
+        </p>
+        <ul>
+            <li><strong>Box Starting Row:</strong> $\text{Row} = K = 46$.</li>
+            <li><strong>Box Height:</strong> Exactly 20 consecutive rows (Rows 46 to 65).</li>
+            <li><strong>Box Width:</strong> $16 \times ((K \bmod 4) + 1) = 16 \times ((46 \bmod 4) + 1) = 16 \times 3 = 48\text{ pixels}$.</li>
+            <li><strong>Words Per Row:</strong> $48 / 16 = 3\text{ words per row}$ (occupying columns 0 through 47 from the leftmost screen edge).</li>
+            <li><strong>Screen Address Range:</strong> Starting at $\text{SCREEN} + 32 \times 46 = 16384 + 1472 = \mathbf{17856}$. Ending at row 65 base ($18464$) + 2 words = $\mathbf{18466}$. Total words modified = $20 \times 3 = \mathbf{60\text{ words}}$.</li>
+            <li><strong>Assembler Extra Feature:</strong> $K \bmod 3 = 46 \bmod 3 = 1 \rightarrow$ <em>Invalid instruction error handling with exact source line numbers</em>.</li>
+        </ul>
+    </div>
+    <div class="footer">
+        <span>Bhavya Anand (Roll No. 2501730046)</span>
+        <span>Page 1 of 4</span>
+        <span>Nand to Tetris Capstone Report</span>
+    </div>
+</div>
+
+<!-- PAGE 2: HACK COMPUTER -->
+<div class="page">
+    <div>
+        <div class="header-banner">
+            <div>
+                <div class="univ-name">Part A — Build the Hack Computer</div>
+                <div class="dept-name">Hardware Description Language (HDL) Implementation & Verification</div>
+            </div>
+            <div style="font-size: 8.5pt; color: #57606a;">K = 46</div>
+        </div>
+
+        <h2>1. Computer Architecture & Chip Connections</h2>
+        <p>
+            The Hack Computer is a 16-bit Von Neumann architecture constructed from three interconnected chips:
+        </p>
+        <ul>
+            <li><strong><code>CPU.hdl</code>:</strong> Composed of an A-register, D-register, ALU, and Program Counter (PC). It decodes 16-bit instructions into control signals. For A-instructions (<code>inst[15]=0</code>), it loads the 15-bit constant into the A-register. For C-instructions (<code>inst[15]=1</code>), it selects ALU operands via <code>Mux16(a=outA, b=inM, sel=inst[12])</code>, executes the ALU operation, routes outputs to destination registers ($A, D, M$), and computes branch conditions (evaluating <code>zr</code> and <code>ng</code> against jump bits <code>j1..j3</code>) to update the PC.</li>
+            <li><strong><code>Memory.hdl</code>:</strong> Decodes address bits <code>address[13..14]</code>:
+                <code>00</code>/<code>01</code> routes to <code>RAM16K</code> (addresses 0–16383);
+                <code>10</code> routes to <code>Screen</code> (16384–24575);
+                <code>11</code> routes to <code>Keyboard</code> (address 24576).
+                A <code>DMux4Way</code> steers the <code>load</code> signal, and a <code>Mux4Way16</code> routes the selected memory component's output to <code>out</code>.</li>
+            <li><strong><code>Computer.hdl</code>:</strong> Instantiates <code>ROM32K</code>, <code>CPU</code>, and <code>Memory</code>. The PC feeds the ROM address; ROM instruction feeds the CPU; CPU memory signals (<code>outM</code>, <code>writeM</code>, <code>addressM</code>) connect directly to Memory.</li>
+        </ul>
+
+        <h2>2. Official Test Verification & Screenshots</h2>
+        <div class="flex-row">
+            <div class="flex-col">
+                <div class="img-container">
+                    <img src="screenshots/CPU_test.png" alt="CPU Test" style="height: 118px;">
+                    <div class="img-caption">Figure 2.1: CPU.tst Execution — Comparison ended successfully</div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="img-container">
+                    <img src="screenshots/Memory_test.png" alt="Memory Test" style="height: 118px;">
+                    <div class="img-caption">Figure 2.2: Memory.tst Address Space Verification</div>
+                </div>
+            </div>
+        </div>
+        <div class="img-container">
+            <img src="screenshots/Computer_test.png" alt="Computer Integration Tests" style="height: 110px;">
+            <div class="img-caption">Figure 2.3: Hack Computer Integration Benchmarks (ComputerAdd, ComputerMax, ComputerRect)</div>
+        </div>
+
+        <p style="margin-top: 6px;">
+            <span class="badge-pass">PASS</span> All five official HDL test scripts passed with 100% bit-exact comparison against course comparison files. Per assignment specifications, built-in primitive gate chips were utilized as needed to ensure maximum simulator compatibility.
+        </p>
+    </div>
+    <div class="footer">
+        <span>Bhavya Anand (Roll No. 2501730046)</span>
+        <span>Page 2 of 4</span>
+        <span>Nand to Tetris Capstone Report</span>
+    </div>
+</div>
+
+<!-- PAGE 3: PYTHON ASSEMBLER -->
+<div class="page">
+    <div>
+        <div class="header-banner">
+            <div>
+                <div class="univ-name">Part B — Build the Python Hack Assembler</div>
+                <div class="dept-name">Two-Pass Architecture & Invalid Instruction Error Handling</div>
+            </div>
+            <div style="font-size: 8.5pt; color: #57606a;">K mod 3 = 1</div>
+        </div>
+
+        <h2>1. Assembler Architecture (Two-Pass Design)</h2>
+        <p>
+            The assembler (<code>assembler.py</code>) was developed independently in Python without relying on external libraries or the official Java assembler tool:
+        </p>
+        <ul>
+            <li><strong>Pass 1 (Label & Symbol Processing):</strong> Iterates through the assembly source, strips comments (<code>//...</code>) and whitespace, and identifies label declarations <code>(LABEL)</code>. Labels are bound to the current ROM instruction address in the symbol table without advancing the ROM program counter. Predefined symbols (<code>SP</code>, <code>LCL</code>, <code>ARG</code>, <code>THIS</code>, <code>THAT</code>, <code>R0..R15</code>, <code>SCREEN=16384</code>, <code>KBD=24576</code>) are pre-populated.</li>
+            <li><strong>Pass 2 (Binary Code Generation):</strong> Translates remaining instructions into 16-bit binary words:
+                <ul>
+                    <li><em>A-instructions (<code>@val</code>):</em> If numeric constant ($0 \le v \le 32767$), converted to binary <code>0vvvvvvvvvvvvvvv</code>. If symbolic, resolved via the symbol table. Unseen variables are dynamically allocated in RAM sequentially starting from address <strong>16</strong>.</li>
+                    <li><em>C-instructions (<code>dest=comp;jump</code>):</em> Encoded into <code>111 a c1..c6 d1..d3 j1..j3</code> using comprehensive lookup dictionaries covering all 28 Hack ALU operations.</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>2. Additional Feature: Line-Number Invalid Instruction Error Handling</h2>
+        <p>
+            For $K \bmod 3 = 46 \bmod 3 = 1$, the assembler strictly validates every instruction, destination field, ALU computation mnemonic, jump mnemonic, and symbol name. When an invalid instruction is encountered, it outputs <code>Line &lt;N&gt;: invalid instruction</code> and halts with exit code 1 without writing a misleading partial <code>.hack</code> file.
+        </p>
+
+        <div class="flex-row">
+            <div class="flex-col">
+                <div class="img-container">
+                    <img src="screenshots/assembler_test.png" alt="Assembler Benchmark Tests" style="height: 125px;">
+                    <div class="img-caption">Figure 3.1: Unit Tests & Official Benchmark Comparisons</div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="img-container">
+                    <img src="screenshots/invalid_instruction.png" alt="Invalid Instruction Handling" style="height: 125px;">
+                    <div class="img-caption">Figure 3.2: Clean Error Handling with Source Line Numbers</div>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 6px;">
+            <span class="badge-pass">PASS</span> Tested against <code>Add.asm</code>, <code>Max.asm</code>, <code>Rect.asm</code>, and <code>Pong.asm</code> (27,483 instructions). The output of <code>assembler.py</code> matches the official reference machine code byte-for-byte with 0 mismatches.
+        </p>
+    </div>
+    <div class="footer">
+        <span>Bhavya Anand (Roll No. 2501730046)</span>
+        <span>Page 3 of 4</span>
+        <span>Nand to Tetris Capstone Report</span>
+    </div>
+</div>
+
+<!-- PAGE 4: BOX PROGRAM & VIVA SUMMARY -->
+<div class="page">
+    <div>
+        <div class="header-banner">
+            <div>
+                <div class="univ-name">Part C — Develop the Box Program</div>
+                <div class="dept-name">Hack Assembly Application & University Viva Preparation</div>
+            </div>
+            <div style="font-size: 8.5pt; color: #57606a;">K = 46</div>
+        </div>
+
+        <h2>1. Box Program Logic & Screen Memory Addressing</h2>
+        <p>
+            The program <code>Box.asm</code> continuously polls the memory-mapped keyboard address <code>KBD</code> (24576). If a key is detected (<code>KBD != 0</code>), <code>color</code> is set to $-1$ (<code>0xFFFF</code>, black pixels). If no key is pressed (<code>KBD == 0</code>), <code>color</code> is set to $0$ (<code>0x0000</code>, white pixels).
+        </p>
+        <p>
+            The drawing routine initializes a pointer <code>row_ptr</code> to <strong>17856</strong> ($16384 + 32 \times 46$) and sets a loop counter <code>row_count = 20</code>. For each of the 20 rows, it writes <code>color</code> into three consecutive words (<code>row_ptr</code>, <code>row_ptr + 1</code>, <code>row_ptr + 2</code>), advances the row pointer by 30 words ($2 + 30 = 32$ words per screen line), and decrements the counter. The last modified address is exactly <strong>18466</strong> ($16384 + 32 \times 65 + 2$).
+        </p>
+
+        <div class="flex-row">
+            <div class="flex-col">
+                <div class="img-container">
+                    <img src="screenshots/box_visible.png" alt="Box Visible" style="height: 115px;">
+                    <div class="img-caption">Figure 4.1: Box Visible When Key is Pressed (Row 46, Width 48px)</div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="img-container">
+                    <img src="screenshots/box_cleared.png" alt="Box Cleared" style="height: 115px;">
+                    <div class="img-caption">Figure 4.2: Box Cleared to White When Key is Released</div>
+                </div>
+            </div>
+        </div>
+
+        <h2>2. Programming Mistake Encountered and Corrected</h2>
+        <p style="background: #fff8c5; border-left: 4px solid #d4a72c; padding: 6px 10px; font-size: 9.5pt; border-radius: 4px;">
+            <strong>Actual Encountered Issue:</strong> When implementing the three-word horizontal write per row, an initial attempt was made to address consecutive words using <code>A=M+1</code> and <code>A=M+2</code> directly after writing Word 0. In Hack assembly, <code>M</code> always accesses <code>RAM[A]</code>. Once <code>A</code> was redirected to point to the screen memory address rather than the pointer variable <code>row_ptr</code>, referencing <code>M</code> erroneously read the screen pixel contents instead of the pointer value. This corrupted the drawing address. The bug was corrected by explicitly loading <code>row_ptr</code>, incrementing it with <code>M=M+1</code>, and setting <code>A=M</code> for each word, followed by advancing <code>row_ptr</code> by 30 words at the end of each row.
+        </p>
+
+        <h2>3. Viva Modification Exercise: Moving the Box Down by One Row</h2>
+        <p>
+            To move the box down by one row (starting at row 47 instead of row 46) during the university viva examination, modify line 44 of <code>Box.asm</code>:
+        </p>
+        <pre><code>// Original (Row 46): 16384 + (32 * 46) = 17856
+@17856
+D=A
+// Viva Modification (Row 47): 16384 + (32 * 47) = 17888
+@17888
+D=A</code></pre>
+        <p>
+            Re-run <code>python3 assembler/assembler.py Box.asm Box.hack</code> and reload in the CPU Emulator. The box will appear one row lower while preserving the exact width (48 pixels) and height (20 rows).
+        </p>
+    </div>
+    <div class="footer">
+        <span>Bhavya Anand (Roll No. 2501730046)</span>
+        <span>Page 4 of 4</span>
+        <span>Nand to Tetris Capstone Report</span>
+    </div>
+</div>
+
+</body>
+</html>
