@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nand to Tetris Capstone Dashboard — Bhavya Anand (2501730046)</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #0d1117;
+        color: #c9d1d9;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+    }
+    header {
+        background: #161b22;
+        border-bottom: 1px solid #30363d;
+        padding: 12px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .brand-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #58a6ff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .brand-sub {
+        font-size: 13px;
+        color: #8b949e;
+    }
+    .badge-k {
+        background: rgba(56, 139, 253, 0.15);
+        color: #58a6ff;
+        border: 1px solid rgba(56, 139, 253, 0.4);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 13px;
+    }
+    .main-container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+    .sidebar {
+        width: 360px;
+        background: #161b22;
+        border-right: 1px solid #30363d;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        overflow-y: auto;
+    }
+    .card {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 16px;
+    }
+    .card-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #8b949e;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .param-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid #21262d;
+        font-size: 13px;
+    }
+    .param-row:last-child {
+        border-bottom: none;
+    }
+    .param-val {
+        font-weight: 600;
+        color: #f0f6fc;
+        font-family: monospace;
+    }
+    .output-box {
+        background: #040d21;
+        border: 2px solid #1f6feb;
+        border-radius: 8px;
+        padding: 16px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    .output-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #58a6ff;
+        margin-bottom: 4px;
+    }
+    .output-val {
+        font-size: 48px;
+        font-weight: 800;
+        color: #388bfd;
+        font-family: monospace;
+        letter-spacing: 2px;
+    }
+    .output-status {
+        font-size: 12px;
+        margin-top: 4px;
+        color: #7ee787;
+        font-weight: 600;
+    }
+    .btn-action {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.15s;
+    }
+    .btn-primary {
+        background: #238636;
+        color: white;
+    }
+    .btn-primary:hover {
+        background: #2ea043;
+    }
+    .btn-secondary {
+        background: #21262d;
+        color: #c9d1d9;
+        border: 1px solid #30363d;
+        margin-top: 8px;
+    }
+    .btn-secondary:hover {
+        background: #30363d;
+    }
+    .workspace {
+        flex: 1;
+        background: #010409;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        position: relative;
+    }
+    .screen-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #161b22;
+        border: 2px solid #30363d;
+        border-radius: 12px;
+        padding: 16px 20px 20px 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .screen-header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 13px;
+        color: #8b949e;
+    }
+    .screen-container {
+        position: relative;
+        cursor: pointer;
+        border: 4px solid #30363d;
+        border-radius: 4px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        background: #ffffff;
+    }
+    #hackCanvas {
+        display: block;
+        background: #ffffff;
+    }
+    .screen-container:hover {
+        border-color: #58a6ff;
+    }
+    .screen-overlay-hint {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(13, 17, 23, 0.85);
+        color: #58a6ff;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        pointer-events: none;
+        border: 1px solid rgba(88, 166, 255, 0.3);
+    }
+    .toast {
+        position: absolute;
+        top: 20px;
+        background: #238636;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+    .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <div>
+            <div class="brand-title">Hack Computer Live Simulation Dashboard</div>
+            <div class="brand-sub">Capstone Project (ETCNTC301) — K.R. Mangalam University</div>
+        </div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:center;">
+        <span style="font-size: 13px; color: #8b949e;">Student: <strong>Bhavya Anand</strong> (2501730046)</span>
+        <div class="badge-k">Personal Parameter K = 46</div>
+    </div>
+</header>
+
+<div class="main-container">
+    <div class="sidebar">
+        <!-- OUTPUT VALUE CARD -->
+        <div class="output-box" id="outputCard">
+            <div class="output-label">Interactive Screen Output</div>
+            <div class="output-val" id="outputNumber">--</div>
+            <div class="output-status" id="outputState">Click Screen to Trigger</div>
+        </div>
+
+        <!-- SPECIFICATIONS CARD -->
+        <div class="card">
+            <div class="card-title">Hardware Specifications</div>
+            <div class="param-row">
+                <span>Personal Number (K)</span>
+                <span class="param-val">46</span>
+            </div>
+            <div class="param-row">
+                <span>Starting Screen Row</span>
+                <span class="param-val">Row 46</span>
+            </div>
+            <div class="param-row">
+                <span>Ending Screen Row</span>
+                <span class="param-val">Row 65 (20 rows)</span>
+            </div>
+            <div class="param-row">
+                <span>Box Width</span>
+                <span class="param-val">48 px (3 words)</span>
+            </div>
+            <div class="param-row">
+                <span>Starting Address</span>
+                <span class="param-val">17856 (0x45C0)</span>
+            </div>
+            <div class="param-row">
+                <span>Ending Address</span>
+                <span class="param-val">18466 (0x4822)</span>
+            </div>
+            <div class="param-row">
+                <span>Total Words Modified</span>
+                <span class="param-val">60 words (960 px)</span>
+            </div>
+            <div class="param-row">
+                <span>Keyboard Register (KBD)</span>
+                <span class="param-val">24576 (0x6000)</span>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="card">
+            <div class="card-title">Interactive Controls</div>
+            <button class="btn-action btn-primary" id="btnToggle">
+                <span id="btnIcon">⬛</span> <span id="btnText">Trigger Box & Output 46</span>
+            </button>
+            <button class="btn-action btn-secondary" id="btnClear">
+                <span>⬜</span> Clear Screen
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="workspace">
+        <div class="toast" id="toastNotice">Output: 46 | Box Rendered at Row 46!</div>
+        
+        <div class="screen-wrapper">
+            <div class="screen-header">
+                <span><strong>Hack Screen Display:</strong> 512 &times; 256 Monochrome Memory-Mapped Matrix</span>
+                <span id="coordDisplay">Cursor: (0, 0)</span>
+            </div>
+
+            <div class="screen-container" id="screenBox">
+                <!-- Exact Hack Screen Resolution 512x256 -->
+                <canvas id="hackCanvas" width="512" height="256"></canvas>
+                <div class="screen-overlay-hint" id="overlayHint">👉 Click anywhere on this screen to output 46 and draw the box</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById("hackCanvas");
+    const ctx = canvas.getContext("2d");
+    const outputNumber = document.getElementById("outputNumber");
+    const outputState = document.getElementById("outputState");
+    const outputCard = document.getElementById("outputCard");
+    const btnToggle = document.getElementById("btnToggle");
+    const btnClear = document.getElementById("btnClear");
+    const btnText = document.getElementById("btnText");
+    const toastNotice = document.getElementById("toastNotice");
+    const overlayHint = document.getElementById("overlayHint");
+    const coordDisplay = document.getElementById("coordDisplay");
+
+    // Personal Number K = 46 specifications
+    const K = 46;
+    const START_ROW = 46;
+    const BOX_HEIGHT = 20;
+    const BOX_WIDTH = 48; // 16 * ((46 % 4) + 1) = 48
+    const WORDS_PER_ROW = 3;
+    const START_ADDR = 16384 + (32 * START_ROW); // 17856
+
+    let isBoxVisible = false;
+
+    // Clear Canvas to pure white
+    function clearScreen() {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, 512, 256);
+        isBoxVisible = false;
+        outputNumber.textContent = "--";
+        outputNumber.style.color = "#8b949e";
+        outputState.textContent = "Screen Cleared";
+        outputState.style.color = "#8b949e";
+        outputCard.style.borderColor = "#30363d";
+        btnText.textContent = "Trigger Box & Output 46";
+        overlayHint.style.display = "block";
+    }
+
+    // Draw Box at Row 46, Width 48, Height 20
+    function drawBox() {
+        ctx.fillStyle = "#000000";
+        // Starting at X=0, Y=46, Width=48px, Height=20px
+        ctx.fillRect(0, START_ROW, BOX_WIDTH, BOX_HEIGHT);
+
+        // Also draw aesthetic high-tech indicator line pointing to Row 46
+        ctx.strokeStyle = "rgba(239, 68, 68, 0.4)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(BOX_WIDTH, START_ROW);
+        ctx.lineTo(BOX_WIDTH + 15, START_ROW);
+        ctx.stroke();
+
+        isBoxVisible = true;
+        outputNumber.textContent = "46";
+        outputNumber.style.color = "#58a6ff";
+        outputState.textContent = "Active (K = 46 | 60 Words Modified)";
+        outputState.style.color = "#7ee787";
+        outputCard.style.borderColor = "#1f6feb";
+        btnText.textContent = "Erase Box";
+        overlayHint.style.display = "none";
+
+        // Show toast notification
+        showToast("Output: 46 | Black Box rendered at Row 46 (Addresses 17856 to 18466)");
+    }
+
+    function toggleBox() {
+        if (isBoxVisible) {
+            clearScreen();
+        } else {
+            drawBox();
+        }
+    }
+
+    function showToast(msg) {
+        toastNotice.textContent = msg;
+        toastNotice.classList.add("show");
+        setTimeout(() => toastNotice.classList.remove("show"), 2500);
+    }
+
+    // Canvas click event
+    canvas.addEventListener("click", () => {
+        toggleBox();
+    });
+
+    // Button event listeners
+    btnToggle.addEventListener("click", () => {
+        toggleBox();
+    });
+
+    btnClear.addEventListener("click", () => {
+        clearScreen();
+    });
+
+    // Track mouse coordinate for inspection
+    canvas.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.floor(e.clientX - rect.left);
+        const y = Math.floor(e.clientY - rect.top);
+        coordDisplay.textContent = `Pixel: (X: ${x}, Y: ${y}) | Row Address: ${16384 + (32 * y)}`;
+    });
+
+    // Physical Keyboard Listener (as required by Nand to Tetris)
+    window.addEventListener("keydown", (e) => {
+        if (!isBoxVisible) {
+            drawBox();
+        }
+    });
+
+    window.addEventListener("keyup", (e) => {
+        // Can optionally toggle
+    });
+
+    // Initial clear
+    clearScreen();
+</script>
+</body>
+</html>
