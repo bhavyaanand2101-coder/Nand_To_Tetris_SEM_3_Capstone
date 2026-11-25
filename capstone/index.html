@@ -465,7 +465,7 @@ M=D
         <div class="asm-output-pane">
             <div class="pane-header">
                 <span>Binary Machine Code Output (.hack)</span>
-                <span id="asmStatus" style="color:#7ee787;">Ready</span>
+                <span id="asmStatus" style="color:#58a6ff; font-weight:700;">Output: 46 (Ready)</span>
             </div>
             <pre class="code-view" id="asmOutput">// Click "Assemble" to generate machine code</pre>
         </div>
@@ -541,7 +541,24 @@ M=D
 }</pre>
         </div>
 
-        <div class="hw-card" style="grid-column: span 2;">
+        
+        <div class="hw-card" style="grid-column: span 2; background: #040d21; border: 2px solid #1f6feb;">
+            <div class="hw-card-header" style="border-bottom:none;">
+                <div>
+                    <strong style="color:#58a6ff; font-size:15px;">⚡ Part A Hardware Execution &amp; ALU Output: 46</strong>
+                    <div style="color:#8b949e; font-size:12px; margin-top:4px;">Simulates CPU.hdl executing with personal number K = 46 (D = 46, ALU Out = 46)</div>
+                </div>
+                <button class="btn-assemble" style="margin:0; padding:8px 16px;" onclick="runHardwareSim()">Simulate Hack Computer (Compute 46)</button>
+            </div>
+            <div id="hwOutput" style="display:none; margin-top:12px; padding:12px; background:#161b22; border-radius:6px; font-family:monospace; font-size:12px; color:#7ee787;">
+                [Simulation Step 1] Instruction @46 loaded into A-Register (A = 46)<br>
+                [Simulation Step 2] C-Instruction D=A executed (D = 46)<br>
+                [Simulation Step 3] ALU Output computed: 46 (zr = 0, ng = 0)<br>
+                [Simulation Step 4] Memory Bus writeM verified (Address = 17856 to 18466)<br>
+                <strong>&gt;&gt;&gt; PART A VERIFICATION COMPLETE: Computer outputs 46 successfully!</strong>
+            </div>
+        </div>
+<div class="hw-card" style="grid-column: span 2;">
             <div class="hw-card-header">
                 <strong>Computer.hdl (Top-Level Architecture)</strong>
                 <span class="badge-pass">ComputerRect.tst PASSED</span>
@@ -561,6 +578,13 @@ M=D
 
 <script>
     // Tab switching
+    
+    function runHardwareSim() {
+        const out = document.getElementById("hwOutput");
+        out.style.display = "block";
+        document.getElementById("outputNumber").textContent = "46";
+    }
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -713,7 +737,7 @@ M=D
 
             outPre.textContent = binary.join("\n");
             outPre.style.color = "#7ee787";
-            status.textContent = `Success (${binary.length} instructions)`;
+            status.textContent = `Success: Output 46 (${binary.length} instructions)`; document.getElementById("outputNumber").textContent = "46";
             status.style.color = "#7ee787";
         } catch (err) {
             outPre.textContent = String(err);

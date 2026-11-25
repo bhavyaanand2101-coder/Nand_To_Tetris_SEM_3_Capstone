@@ -83,7 +83,9 @@
     @30
     D=A
     @row_ptr
-    M=M+D
+    D=D+M
+    @row_ptr
+    M=D
 
     // Decrement row counter
     @row_count
