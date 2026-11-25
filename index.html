@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nand to Tetris Capstone System Dashboard — Bhavya Anand (2501730046)</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: #0d1117;
+        color: #c9d1d9;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+    }
+    header {
+        background: #161b22;
+        border-bottom: 1px solid #30363d;
+        padding: 10px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .brand-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #58a6ff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .brand-sub {
+        font-size: 12px;
+        color: #8b949e;
+    }
+    .badge-k {
+        background: rgba(56, 139, 253, 0.15);
+        color: #58a6ff;
+        border: 1px solid rgba(56, 139, 253, 0.4);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 12px;
+    }
+    .nav-tabs {
+        display: flex;
+        background: #161b22;
+        border-bottom: 1px solid #30363d;
+        padding: 0 24px;
+        gap: 8px;
+    }
+    .tab-btn {
+        padding: 10px 18px;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: #8b949e;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.15s ease;
+    }
+    .tab-btn:hover {
+        color: #c9d1d9;
+    }
+    .tab-btn.active {
+        color: #58a6ff;
+        border-bottom-color: #58a6ff;
+        background: rgba(56, 139, 253, 0.05);
+    }
+    .tab-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 10px;
+        background: #21262d;
+        color: #8b949e;
+    }
+    .tab-btn.active .tab-badge {
+        background: rgba(56, 139, 253, 0.2);
+        color: #58a6ff;
+    }
+    .tab-content {
+        display: none;
+        flex: 1;
+        overflow: hidden;
+    }
+    .tab-content.active {
+        display: flex;
+    }
+
+    /* PART C: BOX TAB */
+    .sidebar {
+        width: 360px;
+        background: #161b22;
+        border-right: 1px solid #30363d;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        overflow-y: auto;
+    }
+    .card {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 14px;
+    }
+    .card-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: #8b949e;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .param-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+        border-bottom: 1px solid #21262d;
+        font-size: 12.5px;
+    }
+    .param-row:last-child {
+        border-bottom: none;
+    }
+    .param-val {
+        font-weight: 600;
+        color: #f0f6fc;
+        font-family: monospace;
+    }
+    .output-box {
+        background: #040d21;
+        border: 2px solid #1f6feb;
+        border-radius: 8px;
+        padding: 14px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    .output-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #58a6ff;
+        margin-bottom: 2px;
+    }
+    .output-val {
+        font-size: 42px;
+        font-weight: 800;
+        color: #388bfd;
+        font-family: monospace;
+        letter-spacing: 2px;
+    }
+    .output-status {
+        font-size: 12px;
+        margin-top: 2px;
+        color: #7ee787;
+        font-weight: 600;
+    }
+    .workspace {
+        flex: 1;
+        background: #010409;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        position: relative;
+    }
+    .screen-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #161b22;
+        border: 2px solid #30363d;
+        border-radius: 12px;
+        padding: 16px 20px 20px 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .screen-header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 13px;
+        color: #8b949e;
+    }
+    .screen-container {
+        position: relative;
+        cursor: pointer;
+        border: 4px solid #30363d;
+        border-radius: 4px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        background: #ffffff;
+    }
+    #hackCanvas {
+        display: block;
+        background: #ffffff;
+    }
+    .screen-container:hover {
+        border-color: #58a6ff;
+    }
+    .screen-overlay-hint {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(13, 17, 23, 0.85);
+        color: #58a6ff;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        pointer-events: none;
+        border: 1px solid rgba(88, 166, 255, 0.3);
+    }
+
+    /* PART A: HARDWARE TAB */
+    .hw-container {
+        flex: 1;
+        padding: 24px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        overflow-y: auto;
+    }
+    .hw-card {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+    }
+    .hw-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #30363d;
+        padding-bottom: 10px;
+        margin-bottom: 12px;
+    }
+    .badge-pass {
+        background: rgba(46, 160, 67, 0.15);
+        color: #3fb950;
+        border: 1px solid rgba(46, 160, 67, 0.4);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    pre.code-view {
+        background: #0d1117;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 10px;
+        font-family: "SF Mono", monospace;
+        font-size: 11px;
+        color: #e6edf3;
+        flex: 1;
+        overflow: auto;
+        white-space: pre;
+    }
+
+    /* PART B: ASSEMBLER TAB */
+    .asm-container {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+    }
+    .asm-editor-pane {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid #30363d;
+        padding: 16px;
+        background: #161b22;
+    }
+    .asm-output-pane {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+        background: #0d1117;
+    }
+    .pane-header {
+        font-size: 12px;
+        font-weight: 700;
+        color: #8b949e;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    textarea.asm-input {
+        flex: 1;
+        background: #0d1117;
+        color: #58a6ff;
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 12px;
+        font-family: "SF Mono", monospace;
+        font-size: 12px;
+        resize: none;
+        outline: none;
+    }
+    textarea.asm-input:focus {
+        border-color: #58a6ff;
+    }
+    .btn-assemble {
+        margin-top: 10px;
+        padding: 10px;
+        background: #238636;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-assemble:hover {
+        background: #2ea043;
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <div>
+            <div class="brand-title">Hack Computer Interactive Master Dashboard</div>
+            <div class="brand-sub">ETCNTC301 Capstone — K.R. Mangalam University | Roll: 2501730046 (Bhavya Anand)</div>
+        </div>
+    </div>
+    <div style="display:flex; gap:12px; align-items:center;">
+        <div class="badge-k">Personal Parameter K = 46</div>
+    </div>
+</header>
+
+<!-- NAVIGATION TABS FOR PART A, PART B, PART C -->
+<div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('partC')">
+        <span>Part C — Box Program & Screen</span>
+        <span class="tab-badge">Interactive</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('partB')">
+        <span>Part B — Python Hack Assembler</span>
+        <span class="tab-badge">Live Compiler</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('partA')">
+        <span>Part A — Hack Computer HDL</span>
+        <span class="tab-badge">Hardware</span>
+    </button>
+</div>
+
+<!-- ==================== PART C: BOX PROGRAM TAB ==================== -->
+<div id="partC" class="tab-content active">
+    <div class="sidebar">
+        <!-- OUTPUT VALUE CARD -->
+        <div class="output-box" id="outputCard">
+            <div class="output-label">Interactive Screen Output</div>
+            <div class="output-val" id="outputNumber">--</div>
+            <div class="output-status" id="outputState">Click Screen to Trigger</div>
+        </div>
+
+        <!-- SPECIFICATIONS CARD -->
+        <div class="card">
+            <div class="card-title">Part C Specifications (K = 46)</div>
+            <div class="param-row">
+                <span>Personal Number (K)</span>
+                <span class="param-val">46</span>
+            </div>
+            <div class="param-row">
+                <span>Starting Screen Row</span>
+                <span class="param-val">Row 46</span>
+            </div>
+            <div class="param-row">
+                <span>Ending Screen Row</span>
+                <span class="param-val">Row 65 (20 rows)</span>
+            </div>
+            <div class="param-row">
+                <span>Box Width</span>
+                <span class="param-val">48 px (3 words)</span>
+            </div>
+            <div class="param-row">
+                <span>Starting Address</span>
+                <span class="param-val">17856 (0x45C0)</span>
+            </div>
+            <div class="param-row">
+                <span>Ending Address</span>
+                <span class="param-val">18466 (0x4822)</span>
+            </div>
+            <div class="param-row">
+                <span>Total Words Modified</span>
+                <span class="param-val">60 words (960 px)</span>
+            </div>
+            <div class="param-row">
+                <span>Keyboard Port (KBD)</span>
+                <span class="param-val">24576 (0x6000)</span>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="card">
+            <div class="card-title">Interactive Controls</div>
+            <button class="btn-assemble" style="width:100%; margin-top:0;" id="btnToggle">
+                ⬛ Trigger Box & Output 46
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="workspace">
+        <div class="screen-wrapper">
+            <div class="screen-header">
+                <span><strong>Hack Screen Display:</strong> 512 &times; 256 Monochrome Memory-Mapped Matrix</span>
+                <span id="coordDisplay">Pixel: (0, 0)</span>
+            </div>
+
+            <div class="screen-container" id="screenBox">
+                <canvas id="hackCanvas" width="512" height="256"></canvas>
+                <div class="screen-overlay-hint" id="overlayHint">👉 Click anywhere on this screen to output 46 and draw the box</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== PART B: ASSEMBLER TAB ==================== -->
+<div id="partB" class="tab-content">
+    <div class="asm-container">
+        <div class="asm-editor-pane">
+            <div class="pane-header">
+                <span>Hack Assembly Editor (.asm)</span>
+                <span style="color:#58a6ff;">K mod 3 = 1 Feature: Line Error Handling</span>
+            </div>
+            <textarea class="asm-input" id="asmInput">// Sample Hack Assembly Code
+@46
+D=A
+@color
+M=D
+(LOOP)
+@color
+D=M
+@SCREEN
+M=D
+@LOOP
+0;JMP</textarea>
+            <button class="btn-assemble" onclick="runLiveAssembler()">⚡ Assemble to 16-Bit Machine Code (.hack)</button>
+        </div>
+        <div class="asm-output-pane">
+            <div class="pane-header">
+                <span>Binary Machine Code Output (.hack)</span>
+                <span id="asmStatus" style="color:#7ee787;">Ready</span>
+            </div>
+            <pre class="code-view" id="asmOutput">// Click "Assemble" to generate machine code</pre>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== PART A: HARDWARE TAB ==================== -->
+<div id="partA" class="tab-content">
+    <div class="hw-container">
+        <div class="hw-card">
+            <div class="hw-card-header">
+                <strong>CPU.hdl (Central Processing Unit)</strong>
+                <span class="badge-pass">CPU.tst PASSED</span>
+            </div>
+            <pre class="code-view">CHIP CPU {
+    IN  inM[16], instruction[16], reset;
+    OUT outM[16], writeM, addressM[15], pc[15];
+
+    PARTS:
+    Not(in=instruction[15], out=isA);
+    Not(in=isA, out=isC);
+
+    Mux16(a=instruction, b=aluOut, sel=isC, out=toAReg);
+    And(a=isC, b=instruction[5], out=destA);
+    Or(a=isA, b=destA, out=loadA);
+    ARegister(in=toAReg, load=loadA, out=aOut, out[0..14]=addressM);
+
+    Mux16(a=aOut, b=inM, sel=instruction[12], out=aluY);
+    And(a=isC, b=instruction[4], out=loadD);
+    DRegister(in=aluOut, load=loadD, out=dOut);
+
+    ALU(x=dOut, y=aluY,
+        zx=instruction[11], nx=instruction[10],
+        zy=instruction[9],  ny=instruction[8],
+        f=instruction[7],   no=instruction[6],
+        out=aluOut, out=outM, zr=zr, ng=ng);
+
+    And(a=isC, b=instruction[3], out=writeM);
+
+    Or(a=zr, b=ng, out=zrOrNg);
+    Not(in=zrOrNg, out=pos);
+    And(a=instruction[0], b=pos, out=jgt);
+    And(a=instruction[1], b=zr, out=jeq);
+    And(a=instruction[2], b=ng, out=jlt);
+    Or(a=jgt, b=jeq, out=jge);
+    Or(a=jge, b=jlt, out=jumpCond);
+    And(a=isC, b=jumpCond, out=doJump);
+
+    PC(in=aOut, load=doJump, inc=true, reset=reset, out[0..14]=pc);
+}</pre>
+        </div>
+
+        <div class="hw-card">
+            <div class="hw-card-header">
+                <strong>Memory.hdl (Address Space Decoder)</strong>
+                <span class="badge-pass">Memory.tst PASSED</span>
+            </div>
+            <pre class="code-view">CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+    DMux4Way(in=load, sel=address[13..14], 
+             a=loadRAM0, b=loadRAM1, c=loadScreen, d=loadKbd);
+    Or(a=loadRAM0, b=loadRAM1, out=loadRAM);
+
+    RAM16K(in=in, load=loadRAM, address=address[0..13], out=outRAM);
+    Screen(in=in, load=loadScreen, address=address[0..12], out=outScreen);
+    Keyboard(out=outKbd);
+
+    Mux4Way16(a=outRAM, b=outRAM, c=outScreen, d=outKbd, 
+              sel=address[13..14], out=out);
+}</pre>
+        </div>
+
+        <div class="hw-card" style="grid-column: span 2;">
+            <div class="hw-card-header">
+                <strong>Computer.hdl (Top-Level Architecture)</strong>
+                <span class="badge-pass">ComputerRect.tst PASSED</span>
+            </div>
+            <pre class="code-view">CHIP Computer {
+    IN reset;
+
+    PARTS:
+    ROM32K(address=pc, out=instruction);
+    CPU(inM=memOut, instruction=instruction, reset=reset,
+        outM=outM, writeM=writeM, addressM=addressM, pc=pc);
+    Memory(in=outM, load=writeM, address=addressM, out=memOut);
+}</pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    // Canvas interaction
+    const canvas = document.getElementById("hackCanvas");
+    const ctx = canvas.getContext("2d");
+    const outputNumber = document.getElementById("outputNumber");
+    const outputState = document.getElementById("outputState");
+    const outputCard = document.getElementById("outputCard");
+    const overlayHint = document.getElementById("overlayHint");
+    const coordDisplay = document.getElementById("coordDisplay");
+
+    let isBoxVisible = false;
+
+    function clearScreen() {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, 512, 256);
+        isBoxVisible = false;
+        outputNumber.textContent = "--";
+        outputNumber.style.color = "#8b949e";
+        outputState.textContent = "Screen Cleared";
+        outputState.style.color = "#8b949e";
+        outputCard.style.borderColor = "#30363d";
+        overlayHint.style.display = "block";
+    }
+
+    function drawBox() {
+        ctx.fillStyle = "#000000";
+        // Starting at X=0, Y=46, Width=48px, Height=20px
+        ctx.fillRect(0, 46, 48, 20);
+
+        isBoxVisible = true;
+        outputNumber.textContent = "46";
+        outputNumber.style.color = "#58a6ff";
+        outputState.textContent = "Active (K = 46 | Row 46..65)";
+        outputState.style.color = "#7ee787";
+        outputCard.style.borderColor = "#1f6feb";
+        overlayHint.style.display = "none";
+    }
+
+    function toggleBox() {
+        if (isBoxVisible) clearScreen();
+        else drawBox();
+    }
+
+    canvas.addEventListener("click", toggleBox);
+    document.getElementById("btnToggle").addEventListener("click", toggleBox);
+
+    canvas.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.floor(e.clientX - rect.left);
+        const y = Math.floor(e.clientY - rect.top);
+        coordDisplay.textContent = `Pixel: (X: ${x}, Y: ${y}) | Address: ${16384 + (32 * y)}`;
+    });
+
+    clearScreen();
+
+    // LIVE BROWSER ASSEMBLER (PART B)
+    const COMP_MAP = {
+        "0":"0101010", "1":"0111111", "-1":"0111010", "D":"0001100", "A":"0110000",
+        "!D":"0001101", "!A":"0110001", "-D":"0001111", "-A":"0110011", "D+1":"0011111",
+        "A+1":"0110111", "D-1":"0001110", "A-1":"0110010", "D+A":"0000010", "D-A":"0010011",
+        "A-D":"0000111", "D&A":"0000000", "D|A":"0010101",
+        "M":"1110000", "!M":"1110001", "-M":"1110011", "M+1":"1110111", "M-1":"1110010",
+        "D+M":"1000010", "D-M":"1010011", "M-D":"1000111", "D&M":"1000000", "D|M":"1010101"
+    };
+    const DEST_MAP = {"":"000", "M":"001", "D":"010", "MD":"011", "A":"100", "AM":"101", "AD":"110", "AMD":"111"};
+    const JUMP_MAP = {"":"000", "JGT":"001", "JEQ":"010", "JGE":"011", "JLT":"100", "JNE":"101", "JLE":"110", "JMP":"111"};
+
+    function runLiveAssembler() {
+        const src = document.getElementById("asmInput").value.split("\n");
+        const outPre = document.getElementById("asmOutput");
+        const status = document.getElementById("asmStatus");
+
+        try {
+            const sym = {
+                "SP":0, "LCL":1, "ARG":2, "THIS":3, "THAT":4, "SCREEN":16384, "KBD":24576
+            };
+            for (let i = 0; i < 16; i++) sym["R" + i] = i;
+
+            let rom = 0;
+            const cleaned = [];
+
+            // PASS 1
+            for (let i = 0; i < src.length; i++) {
+                const lineNum = i + 1;
+                let line = src[i].split("//")[0].trim();
+                if (!line) continue;
+
+                if (line.startsWith("(") && line.endsWith(")")) {
+                    const label = line.slice(1, -1).trim();
+                    if (!label || sym[label] !== undefined) {
+                        throw `Line ${lineNum}: invalid instruction`;
+                    }
+                    sym[label] = rom;
+                } else {
+                    cleaned.push({ num: lineNum, text: line });
+                    rom++;
+                }
+            }
+
+            // PASS 2
+            let nextVar = 16;
+            const binary = [];
+
+            for (const item of cleaned) {
+                const inst = item.text;
+                if (inst.startsWith("@")) {
+                    const symName = inst.slice(1).trim();
+                    let val;
+                    if (/^\d+$/.test(symName)) {
+                        val = parseInt(symName, 10);
+                        if (val < 0 || val > 32767) throw `Line ${item.num}: invalid instruction`;
+                    } else if (/^[a-zA-Z_.$:][a-zA-Z0-9_.$:]*$/.test(symName)) {
+                        if (sym[symName] === undefined) {
+                            sym[symName] = nextVar++;
+                        }
+                        val = sym[symName];
+                    } else {
+                        throw `Line ${item.num}: invalid instruction`;
+                    }
+                    binary.push("0" + val.toString(2).padStart(15, "0"));
+                } else {
+                    const s = inst.replace(/\s+/g, "");
+                    let dest = "", comp = "", jump = "";
+                    let rest = s;
+                    if (rest.includes("=")) {
+                        const parts = rest.split("=");
+                        dest = parts[0];
+                        rest = parts[1];
+                    }
+                    if (rest.includes(";")) {
+                        const parts = rest.split(";");
+                        comp = parts[0];
+                        jump = parts[1];
+                    } else {
+                        comp = rest;
+                    }
+
+                    if (DEST_MAP[dest] === undefined || COMP_MAP[comp] === undefined || JUMP_MAP[jump] === undefined) {
+                        throw `Line ${item.num}: invalid instruction`;
+                    }
+                    binary.push("111" + COMP_MAP[comp] + DEST_MAP[dest] + JUMP_MAP[jump]);
+                }
+            }
+
+            outPre.textContent = binary.join("\n");
+            outPre.style.color = "#7ee787";
+            status.textContent = `Success (${binary.length} instructions)`;
+            status.style.color = "#7ee787";
+        } catch (err) {
+            outPre.textContent = String(err);
+            outPre.style.color = "#f85149";
+            status.textContent = "Assembly Error";
+            status.style.color = "#f85149";
+        }
+    }
+</script>
+</body>
+</html>
