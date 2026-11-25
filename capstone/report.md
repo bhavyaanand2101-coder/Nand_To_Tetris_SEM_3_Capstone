@@ -131,3 +131,331 @@ D=A
 D=A
 ```
 Reassemble with `python3 assembler/assembler.py Box.asm Box.hack` and run in the CPU Emulator. The box renders starting at row 47.
+
+
+---
+
+# Page 5 — Source Code Appendix: Part A (Hack Computer HDL)
+
+### 
+```hdl
+// Hack Central Processing Unit (CPU)
+// Executes 16-bit instructions according to Hack architecture specification.
+CHIP CPU {
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to restart the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // Address of next instruction
+
+    PARTS:
+    // Instruction decoding: Type A (inst[15]=0) vs Type C (inst[15]=1)
+    Not(in=instruction[15], out=isA);
+    Not(in=isA, out=isC);
+
+    // A register input selection
+    Mux16(a=instruction, b=aluOut, sel=isC, out=toAReg);
+
+    // A register load control: load if A-instruction OR (C-instruction AND dest A (d1=inst[5]))
+    And(a=isC, b=instruction[5], out=destA);
+    Or(a=isA, b=destA, out=loadA);
+    ARegister(in=toAReg, load=loadA, out=aOut, out[0..14]=addressM);
+
+    // ALU y-input: A register vs inM depending on 'a' bit (inst[12])
+    Mux16(a=aOut, b=inM, sel=instruction[12], out=aluY);
+
+    // D register load control: C-instruction AND dest D (d2=inst[4])
+    And(a=isC, b=instruction[4], out=loadD);
+    DRegister(in=aluOut, load=loadD, out=dOut);
+
+    // ALU execution: control bits c1..c6 map directly to inst[11..6]
+    ALU(x=dOut, y=aluY,
+        zx=instruction[11], nx=instruction[10],
+        zy=instruction[9],  ny=instruction[8],
+        f=instruction[7],   no=instruction[6],
+        out=aluOut, out=outM, zr=zr, ng=ng);
+
+    // writeM control: C-instruction AND dest M (d3=inst[3])
+    And(a=isC, b=instruction[3], out=writeM);
+
+    // Jump condition evaluation
+    Or(a=zr, b=ng, out=zrOrNg);
+    Not(in=zrOrNg, out=pos);
+    And(a=instruction[0], b=pos, out=jgt);
+    And(a=instruction[1], b=zr, out=jeq);
+    And(a=instruction[2], b=ng, out=jlt);
+    Or(a=jgt, b=jeq, out=jge);
+    Or(a=jge, b=jlt, out=jumpCond);
+    And(a=isC, b=jumpCond, out=doJump);
+
+    // Program Counter (PC): inc=true, load=doJump, reset=reset
+    PC(in=aOut, load=doJump, inc=true, reset=reset, out[0..14]=pc);
+}
+```
+
+### 
+```hdl
+// Hack Data Memory Map: RAM16K (0..16383), Screen (16384..24575), Keyboard (24576)
+CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+    // DMux load signal based on address[13..14]
+    // 00, 01 -> RAM16K; 10 -> Screen; 11 -> Invalid/Keyboard (read-only)
+    DMux4Way(in=load, sel=address[13..14], a=loadRAM0, b=loadRAM1, c=loadScreen, d=loadKbd);
+    Or(a=loadRAM0, b=loadRAM1, out=loadRAM);
+
+    RAM16K(in=in, load=loadRAM, address=address[0..13], out=outRAM);
+    Screen(in=in, load=loadScreen, address=address[0..12], out=outScreen);
+    Keyboard(out=outKbd);
+
+    Mux4Way16(a=outRAM, b=outRAM, c=outScreen, d=outKbd, sel=address[13..14], out=out);
+}
+```
+
+### 
+```hdl
+// Complete Hack Top-Level Computer Architecture
+CHIP Computer {
+    IN reset;
+
+    PARTS:
+    ROM32K(address=pc, out=instruction);
+    CPU(inM=memOut, instruction=instruction, reset=reset,
+        outM=outM, writeM=writeM, addressM=addressM, pc=pc);
+    Memory(in=outM, load=writeM, address=addressM, out=memOut);
+}
+```
+
+---
+
+# Page 6 — Source Code Appendix: Part B (Python Hack Assembler)
+
+### 
+```python
+#!/usr/bin/env python3
+"""
+Hack Assembler with Invalid Instruction Error Handling (Personal Number K = 46, K mod 3 = 1)
+Translates Hack Assembly (.asm) into Hack Machine Code (.hack) with source line numbers.
+"""
+import sys, os, re
+
+PREDEFINED_SYMBOLS = {
+    "SP": 0, "LCL": 1, "ARG": 2, "THIS": 3, "THAT": 4,
+    "SCREEN": 16384, "KBD": 24576
+}
+for i in range(16):
+    PREDEFINED_SYMBOLS[f"R{i}"] = i
+
+COMP_TABLE = {
+    "0": "0101010", "1": "0111111", "-1": "0111010",
+    "D": "0001100", "A": "0110000", "!D": "0001101",
+    "!A": "0110001", "-D": "0001111", "-A": "0110011",
+    "D+1": "0011111", "A+1": "0110111", "D-1": "0001110",
+    "A-1": "0110010", "D+A": "0000010", "D-A": "0010011",
+    "A-D": "0000111", "D&A": "0000000", "D|A": "0010101",
+    "M": "1110000", "!M": "1110001", "-M": "1110011",
+    "M+1": "1110111", "M-1": "1110010", "D+M": "1000010",
+    "D-M": "1010011", "M-D": "1000111", "D&M": "1000000",
+    "D|M": "1010101"
+}
+
+DEST_TABLE = {
+    "": "000", "M": "001", "D": "010", "MD": "011",
+    "A": "100", "AM": "101", "AD": "110", "AMD": "111"
+}
+
+JUMP_TABLE = {
+    "": "000", "JGT": "001", "JEQ": "010", "JGE": "011",
+    "JLT": "100", "JNE": "101", "JLE": "110", "JMP": "111"
+}
+
+SYMBOL_REGEX = re.compile(r"^[a-zA-Z_.$:][a-zA-Z0-9_.$:]*$")
+
+class AssemblyError(Exception):
+    def __init__(self, line_num, message="invalid instruction"):
+        self.line_num = line_num
+        self.message = message
+        super().__init__(f"Line {line_num}: {message}")
+
+class HackAssembler:
+    def __init__(self):
+        self.symbol_table = {}
+        self.next_var_address = 16
+        self.num_labels = 0
+        self.num_variables = 0
+
+    def assemble(self, asm_source_lines):
+        self.symbol_table = dict(PREDEFINED_SYMBOLS)
+        self.next_var_address = 16
+        self.num_labels = 0
+        self.num_variables = 0
+
+        rom_address = 0
+        cleaned_instructions = []
+
+        # PASS 1: Symbol resolution & syntax validation
+        for line_idx, raw_line in enumerate(asm_source_lines):
+            line_num = line_idx + 1
+            cleaned = raw_line.split("//")[0].strip()
+            if not cleaned:
+                continue
+
+            if cleaned.startswith("("):
+                if not cleaned.endswith(")"):
+                    raise AssemblyError(line_num, "invalid instruction")
+                label = cleaned[1:-1].strip()
+                if not label or not SYMBOL_REGEX.match(label) or label in self.symbol_table:
+                    raise AssemblyError(line_num, "invalid instruction")
+                self.symbol_table[label] = rom_address
+                self.num_labels += 1
+            else:
+                cleaned_instructions.append((line_num, cleaned))
+                rom_address += 1
+
+        # PASS 2: Binary code generation
+        binary_code = []
+        for line_num, inst in cleaned_instructions:
+            if inst.startswith("@"):
+                val_str = inst[1:].strip()
+                if not val_str:
+                    raise AssemblyError(line_num, "invalid instruction")
+                if val_str.isdigit():
+                    val = int(val_str)
+                    if val < 0 or val > 32767:
+                        raise AssemblyError(line_num, "invalid instruction")
+                elif SYMBOL_REGEX.match(val_str):
+                    if val_str not in self.symbol_table:
+                        self.symbol_table[val_str] = self.next_var_address
+                        self.next_var_address += 1
+                        self.num_variables += 1
+                    val = self.symbol_table[val_str]
+                else:
+                    raise AssemblyError(line_num, "invalid instruction")
+                binary_code.append(f"0{val:015b}")
+            else:
+                s = "".join(inst.split())
+                dest_part, jump_part, comp_part = "", "", ""
+                if "=" in s:
+                    dest_part, s = s.split("=", 1)
+                if ";" in s:
+                    comp_part, jump_part = s.split(";", 1)
+                else:
+                    comp_part = s
+
+                if dest_part not in DEST_TABLE or comp_part not in COMP_TABLE or jump_part not in JUMP_TABLE:
+                    raise AssemblyError(line_num, "invalid instruction")
+
+                comp_bin = COMP_TABLE[comp_part]
+                dest_bin = DEST_TABLE[dest_part]
+                jump_bin = JUMP_TABLE[jump_part]
+                binary_code.append(f"111{comp_bin}{dest_bin}{jump_bin}")
+
+        return binary_code
+```
+
+---
+
+# Page 7 — Source Code Appendix: Part C (Box Program in Hack Assembly)
+
+### 
+```hack
+// ==================================================================
+// Box.asm - Make the Computer Draw a Box
+// Student: Bhavya Anand
+// Roll Number: 2501730046
+// Personal Number K: 46
+// Course: Nand to Tetris - I (ETCNTC301)
+// University: K.R. Mangalam University
+//
+// Box Specifications for K = 46:
+// - Starting row: 46 (row 46 of 256)
+// - Ending row: 65 (20 consecutive screen rows)
+// - Starting column: 0 (left edge)
+// - Width: 48 pixels (3 consecutive 16-bit words per row)
+// - Starting screen address: 16384 + (32 * 46) = 17856
+// - Ending screen address: 17856 + (19 * 32) + 2 = 18466
+// - Total screen words modified: 20 * 3 = 60 words
+// ==================================================================
+
+(CHECK_KEYBOARD)
+    @KBD
+    D=M
+    @DRAW_BLACK
+    D;JNE
+
+(DRAW_WHITE)
+    @color
+    M=0
+    @RENDER
+    0;JMP
+
+(DRAW_BLACK)
+    @color
+    M=-1
+
+(RENDER)
+    @17856
+    D=A
+    @row_ptr
+    M=D
+
+    @20
+    D=A
+    @row_count
+    M=D
+
+(ROW_LOOP)
+    @row_count
+    D=M
+    @CHECK_KEYBOARD
+    D;JEQ
+
+    // Word 0 (pixels 0..15)
+    @color
+    D=M
+    @row_ptr
+    A=M
+    M=D
+
+    // Advance to Word 1
+    @row_ptr
+    M=M+1
+
+    // Word 1 (pixels 16..31)
+    @color
+    D=M
+    @row_ptr
+    A=M
+    M=D
+
+    // Advance to Word 2
+    @row_ptr
+    M=M+1
+
+    // Word 2 (pixels 32..47)
+    @color
+    D=M
+    @row_ptr
+    A=M
+    M=D
+
+    // Advance pointer to the start of the next screen row
+    // Next row = row_ptr + 30 (since already advanced by 2 words: 2 + 30 = 32)
+    @30
+    D=A
+    @row_ptr
+    M=M+D
+
+    // Decrement row counter
+    @row_count
+    M=M-1
+
+    @ROW_LOOP
+    0;JMP
+```
